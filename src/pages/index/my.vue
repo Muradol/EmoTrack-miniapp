@@ -176,7 +176,7 @@
 .menu-item {
   display: flex;
   align-items: center;
-  padding: 15px 30px;
+  padding: 12px 30px;
   border-bottom: 1px solid #eee;
 }
 
@@ -192,7 +192,7 @@ image{
 
 .logout-button {
   width: 80%;
-  padding: 5px 0;
+  padding: 3px 0;
   background-color: #e74c3c;
   color: #fff;
   font-size: 18px;

@@ -1,14 +1,5 @@
 <template>
     <view class="container">
-      <view class="header">
-        <view class="profile">
-          <image class="head" src="../../static/head.png" mode="aspectFill"></image>
-          <view class="info">
-            <view class="name">Muradil</view>
-            <view class="position">产品经理</view>
-          </view>
-        </view>
-      </view>
       <view class="report">
         <view class="report-header">情绪检测报告</view>
         <view class="user-info">
@@ -76,41 +67,6 @@ export default {
   align-items: center;
   height: 100vh;
   background-color: #fff;
-}
-
-.header {
-  width: 100%;
-  margin-bottom: 20px;
-}
-
-.profile {
-  display: flex;
-  align-items: center;
-  margin-top: 30px;
-  margin-left: 30px;
-}
-
-.head {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  margin-right: 10px;
-}
-
-.info {
-  display: flex;
-  flex-direction: column;
-}
-
-.name {
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.position {
-  font-size: 12px;
-  color: #666;
-  margin-left: 10px;
 }
 
 .report {

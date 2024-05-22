@@ -1,9 +1,9 @@
 <template>
     <view class="container">
       <view class="header">
-        <view class="profile">
+        <view class="profile" @click="my">
           <image class="head" src="../../static/head.png" mode="aspectFill"></image>
-          <view class="info">
+          <view class="info" @click="my">
             <view class="name">Muradil</view>
             <view class="position">产品经理</view>
           </view>
@@ -62,7 +62,12 @@ export default {
       uni.navigateTo({
         url: `/pages/index/report?index=${index}`
       });
-    }
+    },
+    my() {
+        uni.navigateTo({
+          url: '/pages/index/my' 
+        });
+      }
   }
 };
   </script>

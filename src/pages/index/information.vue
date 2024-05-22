@@ -132,7 +132,7 @@
   
   .edit-button {
     width: 80%;
-    padding: 5px 0;
+    padding: 3px 0;
     background-color: #4285f4;
     color: #fff;
     font-size: 18px;
