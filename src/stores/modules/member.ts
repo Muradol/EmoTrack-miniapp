@@ -1,15 +1,26 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-export const useCounterStore = defineStore(
-  'counter',
+
+export const useMemberStore = defineStore(
+  'member',
   () => {
-    const count = ref(0)
-    const increment = () => {
-      count.value++
+    //用户信息
+    const user =ref()
+
+    //保存用户信息
+    const setUser = (val: any) => {
+      user.value = val;
+    };
+    
+
+    //清理用户信息，退出时使用
+    const clearUser=()=>{
+      user.value=undefined
     }
 
-    return { count, increment }
+    //记得return
+    return { user,setUser,clearUser }
   },
   {
     // 配置持久化

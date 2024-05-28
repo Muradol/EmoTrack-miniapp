@@ -1,5 +1,8 @@
 import { createSSRApp } from 'vue'
 import App from './App.vue'
+
+
+//导入pinia实例
 import pinia from '@/stores'
 
 export function createApp() {
@@ -7,7 +10,7 @@ export function createApp() {
 
   // 使用pinia
   app.use(pinia)
-
+  
   return {
     app,
   }

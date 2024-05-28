@@ -1,63 +1,76 @@
 <template>
-    <view class="container">
-      <view class="header">
-        <view class="profile">
-          <image class="head" src="../../static/head.png" mode="aspectFill"></image>
-          <view class="info">
-            <view class="name">Muradil</view>
-            <view class="position">产品经理</view>
-          </view>
+  <view class="container">
+    <view class="header">
+      <view class="profile">
+        <image class="head" src="../../static/head.png" mode="aspectFill"></image>
+        <view class="info">
+          <view class="name">Muradil</view>
+          <view class="position">产品经理</view>
         </view>
       </view>
-      <view class="input-box">
-        <view class="input-wrapper">
-          <label class="input-label">用户名</label>
-          <input type="text" v-model="username" placeholder="请输入用户名" class="input"/>
-        </view>
-        <view class="input-wrapper">
-          <label class="input-label">密码</label>
-          <input type="password" v-model="password" placeholder="请输入密码" class="input"/>
-        </view>
-        <view class="input-wrapper">
-          <label class="input-label">确认密码</label>
-          <input type="password" v-model="password" placeholder="请再次输入密码" class="input"/>
-        </view>
-      </view>
-      <button class="save-button" @click="save">保存</button>
-      <button class="cancel-button" @click="cancel">取消</button>
     </view>
-  </template>
-  
+    <view class="input-box">
+      <view class="input-wrapper">
+        <label class="input-label">密码</label>
+        <input type="password" v-model="password" placeholder="请输入密码" class="input"/>
+      </view>
+      <view class="input-wrapper">
+        <label class="input-label">确认密码</label>
+        <input type="password" v-model="confirmPassword" placeholder="请再次输入密码" class="input"/>
+      </view>
+    </view>
+    <button class="save-button" @click="save">保存</button>
+    <button class="cancel-button" @click="cancel">取消</button>
+  </view>
+</template>
 
-  <script>
-  export default {
-    data() {
-      return {};
-    },
-    methods: {
-      // 保存按钮点击事件处理函数
-      save() {
-      uni.showToast({
+<script lang="ts">
+import { defineComponent, ref } from 'vue';
+
+export default defineComponent({
+  setup() {
+    const username = ref('');
+    const password = ref('');
+    const confirmPassword = ref('');
+
+    const save = () => {
+      if (password.value !== confirmPassword.value) {
+        showToast({
+          title: '密码和确认密码不匹配',
+          icon: 'none'
+        });
+        return;
+      }
+
+      showToast({
         title: '修改密码成功',
         icon: 'success'
       });
 
-      // 跳转到index页面
       setTimeout(() => {
-        uni.navigateTo({
+        navigateTo({
           url: '/pages/index/my' // 假设index页面路径为/pages/index/index
         });
       }, 1500); // 等待1.5秒以显示登录成功的提示
-    },
-      // 取消按钮点击事件处理函数
-      cancel() {
-        uni.navigateTo({
-          url: '/pages/index/my'
-        });
-      }
-    }
-  };
-  </script>
+    };
+
+    const cancel = () => {
+      navigateTo({
+        url: '/pages/index/my'
+      });
+    };
+
+    return {
+      username,
+      password,
+      confirmPassword,
+      save,
+      cancel
+    };
+  }
+});
+</script>
+  
   
   
   <style>
@@ -142,4 +155,4 @@ margin-left: 10%;
   border-radius: 5px;
   margin-top: 15px;
 }
-</style>
+</style>navigatornavigator

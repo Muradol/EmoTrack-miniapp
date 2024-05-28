@@ -1,74 +1,115 @@
 <template>
-    <view class="container">
-      <view class="header">
-        <view class="profile" @click="my">
-          <image class="head" src="../../static/head.png" mode="aspectFill"></image>
-          <view class="info" @click="my">
-            <view class="name">Muradil</view>
-            <view class="position">产品经理</view>
-          </view>
+  <view class="container">
+    <view class="header">
+      <view class="profile" @click="handleProfileClick">
+        <image class="head" src="../../static/my.png" mode="aspectFill"></image>
+        <view class="info">
+          <view class="name">{{ username || '请登录' }}</view>
         </view>
       </view>
-      <view class="main-content">
-        <image class="logo" src="../../static/logo.png" mode="aspectFit"></image>
-        <view class="title">欢迎使用 EmoTrack</view>
-        <button class="button-primary" @tap="showActionSheet">情绪检测</button>
-        <button class="button-secondary" @click="historicalreport">历史报告</button>
-      </view>
     </view>
-  </template>
+    <view class="main-content">
+      <image class="logo" src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExbGczM2tkb3ByM3o0cWhvb25teHhncTdrY3Zpb29ieXA2cmxycXF4eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/jRTlHjXwkw43WRgCnW/giphy.gif" mode="aspectFit"></image>
+      <view class="title">欢迎使用 EmoTrack</view>
+      <button class="button-primary" @tap="showActionSheet">情绪检测</button>
+      <button class="button-secondary" @click="historicalreport">历史报告</button>
+    </view>
+  </view>
+</template>
 
-  <script>
-export default {
-  data() {
-    return {};
-  },
-  methods: {
-    showActionSheet() {
-      wx.showActionSheet({
-        itemList: ['拍照', '从手机相册选择'],
-        success: (res) => {
-          if (!res.cancel) {
-            if (res.tapIndex === 0) {
-              // 访问相机
-              wx.chooseImage({
-                sourceType: ['camera'],
-                success: (cameraRes) => {
-                  console.log(cameraRes.tempFilePaths);
-                  // 在这里处理拍照后的图片
-                }
-              });
-            } else if (res.tapIndex === 1) {
-              // 访问相册
-              wx.chooseImage({
-                sourceType: ['album'],
-                success: (albumRes) => {
-                  console.log(albumRes.tempFilePaths);
-                  // 在这里处理选中的相册图片
-                }
-              });
-            }
-          }
-        },
-        fail(res) {
-          console.log(res.errMsg);
+<script lang="ts">
+import { defineComponent, ref, onMounted } from 'vue';
+
+export default defineComponent({
+  setup() {
+    const username = ref('');
+
+    onMounted(() => {
+      try {
+        const storedUsername = uni.getStorageSync('username');
+        if (storedUsername) {
+          username.value = storedUsername;
         }
-      });
-    },
-    historicalreport() {
-        uni.navigateTo({
-          url: '/pages/index/historicalreport' 
+      } catch (error) {
+        console.error('Error accessing local storage:', error);
+      }
+    });
+
+    const showActionSheet = () => {
+      try {
+        wx.showActionSheet({
+          itemList: ['拍照', '从手机相册选择'],
+          success: (res) => {
+            if (!res.cancel) {
+              if (res.tapIndex === 0) {
+                wx.chooseImage({
+                  sourceType: ['camera'],
+                  success: (cameraRes) => {
+                    console.log(cameraRes.tempFilePaths);
+                  }
+                });
+              } else if (res.tapIndex === 1) {
+                wx.chooseImage({
+                  sourceType: ['album'],
+                  success: (albumRes) => {
+                    console.log(albumRes.tempFilePaths);
+                  }
+                });
+              }
+            }
+          },
+          fail(res) {
+            console.log(res.errMsg);
+          }
         });
-      },
-      my() {
+      } catch (error) {
+        console.error('Error showing action sheet:', error);
+      }
+    };
+
+    const historicalreport = () => {
+      try {
+        const token = uni.getStorageSync('token');
+        if (!token) {
+          uni.navigateTo({
+            url: '/pages/index/login'
+          });
+          return;
+        }
         uni.navigateTo({
-          url: '/pages/index/my' 
+          url: '/pages/index/historicalreport'
+        });
+      } catch (error) {
+        console.error('Error accessing local storage:', error);
+      }
+    };
+
+    const handleProfileClick = () => {
+      if (username.value) {
+        uni.navigateTo({
+          url: '/pages/index/my'
+        });
+      } else {
+        uni.reLaunch({
+          url: '/pages/index/login'
         });
       }
-  }
-};
+    };
 
-  </script>
+    return {
+      username,
+      showActionSheet,
+      historicalreport,
+      handleProfileClick
+    };
+  }
+});
+</script>
+
+
+
+
+
   
   <style>
 .container {
@@ -82,7 +123,7 @@ export default {
 
 .header {
   width: 100%;
-  margin-bottom: 90px;
+  margin-bottom: 5px;
 }
 
 .profile {
@@ -93,8 +134,8 @@ export default {
 }
 
 .head {
-  width: 50px;
-  height: 50px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   margin-right: 10px;
 }
@@ -106,7 +147,7 @@ export default {
 
 .name {
   font-size: 18px;
-  font-weight: bold;
+  text-decoration: underline;
 }
 
 .position {
@@ -123,19 +164,19 @@ export default {
 }
 
 .logo {
-  width: 100px;
-  height: 100px;
-  margin-bottom: 20px;
+  width: 400px;
+  height: 300px;
 }
 
 .title {
   font-size: 23px;
   font-weight: bold;
-  margin-bottom: 150px;
+  margin-bottom: 70px;
+  margin-top: 20px;
 }
 
 .button-primary {
-  width: 80%;
+  width: 250px;
   padding: 5px;
   background-color: #007bff;
   color: #fff;
@@ -145,7 +186,7 @@ export default {
 }
 
 .button-secondary {
-  width: 80%;
+  width: 250px;
   padding: 5px;
   background-color: #fff;
   color: #007bff;
@@ -153,6 +194,5 @@ export default {
   font-size: 16px;
   cursor: pointer;
 }
-
   </style>
   

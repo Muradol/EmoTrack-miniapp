@@ -30,27 +30,34 @@
           <view class="label">部门</view>
           <view class="value">技术部</view>
         </view>
+        <view class="detail-item">
+          <view class="label">岗位</view>
+          <view class="value">产品经理</view>
+        </view>
       </view>
       <button class="edit-button" @click="update">编辑</button>
     </view>
   </template>
   
 
-  <script>
-  export default {
-    data() {
-      return {};
-    },
-    methods: {
-      // 编辑按钮点击事件处理函数
-      update() {
-        uni.navigateTo({
+  <script lang="ts">
+  import { defineComponent } from 'vue';
+  
+  export default defineComponent({
+    setup() {
+      const update = () => {
+        uni.reLaunch({
           url: '/pages/index/updateinformation'
         });
-      }
+      };
+  
+      return {
+        update
+      };
     }
-  };
+  });
   </script>
+  
   
   
   <style>

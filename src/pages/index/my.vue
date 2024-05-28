@@ -1,81 +1,108 @@
 <template>
-    <view class="container">
-      <view class="header">
-        <view class="profile">
-          <image class="head" src="../../static/head.png" mode="aspectFill"></image>
-          <view class="info">
-            <view class="name">Muradil</view>
-            <view class="position">产品经理</view>
-          </view>
+  <view class="container">
+    <view class="header">
+      <view class="profile">
+        <image class="head" src="../../static/my.png" mode="aspectFill"></image>
+        <view class="info">
+          <view class="name">{{ username }}</view>
+          <view class="position">产品经理</view>
         </view>
       </view>
-      <view class="stats">
-        <view class="stat-title">我的检测次数</view>
-        <view class="stat-items">
-          <view class="stat-item">
-            <view class="stat-number">3</view>
-            <view class="stat-label">今日</view>
-          </view>
-          <view class="stat-item">
-            <view class="stat-number">20</view>
-            <view class="stat-label">本周</view>
-          </view>
-          <view class="stat-item">
-            <view class="stat-number">78</view>
-            <view class="stat-label">本月</view>
-          </view>
-        </view>
-      </view>
-      <view class="menu">
-        <view class="menu-item" @click="information">
-         <image src="../../static/info.png" mode="aspectFill"></image>
-          <view class="menu-text" >个人信息</view>
-        </view>
-        <view class="menu-item" @click="historicalreport">
-          <image src="../../static/history.png" mode="aspectFill"></image>
-          <view class="menu-text">历史报告</view>
-        </view>
-        <view class="menu-item" @click="updatepassword">
-        <image src="../../static/password.png" mode="aspectFill"></image>
-          <view class="menu-text">修改密码</view>
-        </view>
-      </view>
-      <button class="logout-button" @click="logout">退出登录</button>
     </view>
-  </template>
-  
-  
-  
+    <view class="stats">
+      <view class="stat-title">我的检测次数</view>
+      <view class="stat-items">
+        <view class="stat-item">
+          <view class="stat-number">3</view>
+          <view class="stat-label">今日</view>
+        </view>
+        <view class="stat-item">
+          <view class="stat-number">20</view>
+          <view class="stat-label">本周</view>
+        </view>
+        <view class="stat-item">
+          <view class="stat-number">78</view>
+          <view class="stat-label">本月</view>
+        </view>
+      </view>
+    </view>
+    <view class="menu">
+      <view class="menu-item" @click="information">
+        <image src="../../static/info.png" mode="aspectFill"></image>
+        <view class="menu-text">个人信息</view>
+      </view>
+      <view class="menu-item" @click="historicalreport">
+        <image src="../../static/history.png" mode="aspectFill"></image>
+        <view class="menu-text">历史报告</view>
+      </view>
+      <view class="menu-item" @click="updatepassword">
+        <image src="../../static/password.png" mode="aspectFill"></image>
+        <view class="menu-text">修改密码</view>
+      </view>
+    </view>
+    <button class="logout-button" @click="logout">退出登录</button>
+  </view>
+</template>
 
-  <script>
-  export default {
-    data() {
-      return {};
-    },
-    methods: {
-      historicalreport() {
-        uni.navigateTo({
-          url: '/pages/index/historicalreport'
-        });
-      },
-      information() {
-        uni.navigateTo({
-          url: '/pages/index/information'
-        });
-      },
-      updatepassword() {
-        uni.navigateTo({
-          url: '/pages/index/updatepassword'
-        });
-      },
-      logout() {
-        uni.navigateTo({
-          url: '/pages/index/login'
-        });
+<script lang="ts">
+import { defineComponent, ref, onMounted } from 'vue';
+
+export default defineComponent({
+  setup() {
+    const username = ref('');
+
+    onMounted(() => {
+      try {
+        const storedUsername = uni.getStorageSync('username');
+        if (storedUsername) {
+          username.value = storedUsername;
+        }
+      } catch (error) {
+        console.error('Error accessing local storage:', error);
       }
-    }
-  };
-  </script>
+    });
+
+    const historicalreport = () => {
+      uni.navigateTo({
+        url: '/pages/index/historicalreport'
+      });
+    };
+
+    const information = () => {
+      uni.navigateTo({
+        url: '/pages/index/information'
+      });
+    };
+
+    const updatepassword = () => {
+      uni.navigateTo({
+        url: '/pages/index/updatepassword'
+      });
+    };
+
+    const logout = () => {
+      try {
+        uni.removeStorageSync('token');
+        uni.removeStorageSync('username');
+      } catch (error) {
+        console.error('Error removing local storage:', error);
+      }
+      uni.reLaunch({
+        url: '/pages/index/login'
+      });
+    };
+
+    return {
+      username,
+      historicalreport,
+      information,
+      updatepassword,
+      logout
+    };
+  }
+});
+</script>
+
   
   
   <style>
@@ -122,7 +149,8 @@
 .position {
   font-size: 12px;
   color: #fff;
-  margin-left: 10px;
+  margin-top: 2px;
+  margin-left: 6px;
 }
 
 .stats {

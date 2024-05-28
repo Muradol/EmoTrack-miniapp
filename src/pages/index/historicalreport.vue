@@ -29,11 +29,12 @@
 
   
 
-  <script>
-export default {
-  data() {
-    return {
-      reports: [
+  <script lang="ts">
+  import { defineComponent, ref } from 'vue';
+  
+  export default defineComponent({
+    setup() {
+      const reports = ref([
         { time: '2024-4-22 20:12:00' },
         { time: '2024-4-22 19:12:00' },
         { time: '2024-4-22 18:12:00' },
@@ -52,25 +53,31 @@ export default {
         { time: '2024-4-22 12:12:00' },
         { time: '2024-4-22 12:12:00' },
         { time: '2024-4-22 12:12:00' },
-        { time: '2024-4-22 12:12:00' },
-      ]
-    };
-  },
-  methods: {
-    viewReport(index) {
-      // 跳转到 report 页面，并传递参数
-      uni.navigateTo({
-        url: `/pages/index/report?index=${index}`
-      });
-    },
-    my() {
+        { time: '2024-4-22 12:12:00' }
+      ]);
+  
+      const viewReport = (index) => {
+        // 跳转到 report 页面，并传递参数
         uni.navigateTo({
-          url: '/pages/index/my' 
+          url: `/pages/index/report?index=${index}`
         });
-      }
-  }
-};
+      };
+  
+      const my = () => {
+        uni.navigateTo({
+          url: '/pages/index/my'
+        });
+      };
+  
+      return {
+        reports,
+        viewReport,
+        my
+      };
+    }
+  });
   </script>
+  
   
   <style>
 .container {

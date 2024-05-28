@@ -38,11 +38,12 @@
   </template>
   
 
-  <script>
-export default {
-  data() {
-    return {
-      emotions: [
+  <script lang="ts">
+  import { defineComponent, ref } from 'vue';
+  
+  export default defineComponent({
+    setup() {
+      const emotions = ref([
         { name: '开心', reference: '20~50', test: 60, result: '偏高' },
         { name: '正常', reference: '15~50', test: 30, result: '正常' },
         { name: '伤心', reference: '30~40', test: 0, result: '偏低' },
@@ -51,13 +52,15 @@ export default {
         { name: '厌恶', reference: '40~70', test: 0, result: '偏低' },
         { name: '愤怒', reference: '30~40', test: 0, result: '偏低' },
         { name: '蔑视', reference: '40~50', test: 0, result: '偏低' }
-      ]
-    };
-  },
-  methods: {}
-};
-
+      ]);
+  
+      return {
+        emotions
+      };
+    }
+  });
   </script>
+  
   
   <style>
 .container {

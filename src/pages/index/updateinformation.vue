@@ -42,33 +42,47 @@
     </view>
   </template>
   
-  <script>
-  export default {
-    data() {
-      return {
-        username: '',
-        phone: '',
-        birthday: '',
-        genderIndex: 0,
-        departmentIndex: 0,
-        genderOptions: ['男', '女', '不限'],
-        departmentOptions: ['产品部', '研发部', '销售部', '市场部']
+  <script lang="ts">
+  import { defineComponent, ref } from 'vue';
+  
+  export default defineComponent({
+    setup() {
+      const username = ref('');
+      const phone = ref('');
+      const birthday = ref('');
+      const genderIndex = ref(0);
+      const departmentIndex = ref(0);
+  
+      const genderOptions = ref(['男', '女', '不限']);
+      const departmentOptions = ref(['产品部', '研发部', '销售部', '市场部']);
+  
+      const save = () => {
+        uni.reLaunch({
+          url: '/pages/index/my'
+        });
       };
-    },
-    methods: {
-      save() {
-        uni.navigateTo({
-          url: '/pages/index/information'
+  
+      const cancel = () => {
+        uni.redirectTo({
+          url: '/pages/index/my'
         });
-      },
-      cancel() {
-        uni.navigateTo({
-          url: '/pages/index/information'
-        });
-      }
+      };
+  
+      return {
+        username,
+        phone,
+        birthday,
+        genderIndex,
+        departmentIndex,
+        genderOptions,
+        departmentOptions,
+        save,
+        cancel
+      };
     }
-  };
+  });
   </script>
+  
   
   <style>
   .container {

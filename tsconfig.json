@@ -7,7 +7,16 @@
       "@/*": ["./src/*"]
     },
     "lib": ["esnext", "dom"],
-    "types": ["@dcloudio/types"]
+    "outDir": "./dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "module": "es2015",
+    "target": "esnext",
+    "types": ["@dcloudio/types", "@types/wechat-miniprogram", "@uni-helper/uni-app-types"],
+    "ignoreDeprecations": "5.0" // 忽略版本警告
+  },
+  "vueCompilerOptions": {
+    "experimentalRuntimeMode": "runtime-uni-app"
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"]
 }

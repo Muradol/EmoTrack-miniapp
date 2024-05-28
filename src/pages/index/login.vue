@@ -19,45 +19,65 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import {defineComponent, ref} from 'vue'
+import {userLogin} from '@/api/login'
+import { useMemberStore } from '@/stores'
 
 export default defineComponent({
-  data() {
-    return {
-      username: '',
-      password: ''
-    };
-  },
-  methods: {
-    login() {
-      if (!this.username || !this.password) {
+  setup() {
+    const username = ref('')
+    const password = ref('')
+
+    const login = async () => {
+      if (!username.value || !password.value) {
         uni.showToast({
           title: '请输入用户名和密码',
+          icon: 'none',
+          duration: 2000,
+        })
+        return
+      }
+      try {
+        const res = await userLogin({
+          employeePhoneNumber: username.value,
+          employeePassword: password.value,
+        });
+        const memberStore = useMemberStore();
+        memberStore.setUser({
+          token: res.token,
+          username: username.value
+        });
+        uni.setStorageSync('token', res.token);
+        uni.setStorageSync('username', username.value);
+        uni.showToast({
+          title: '登录成功',
+          icon: 'success'
+        });
+        setTimeout(() => {
+          uni.reLaunch({
+            url: '/pages/index/index'
+          });
+        }, 500);
+      } catch (error) {
+        uni.showToast({
+          title: '登录失败',
           icon: 'none'
         });
-        return;
+        console.error('Login error:', error);
       }
-      // handle login logic here
-      uni.showToast({
-        title: '登录成功',
-        icon: 'success'
-      });
-
-      // 跳转到index页面
-      setTimeout(() => {
-        uni.navigateTo({
-          url: '/pages/index/index' // 假设index页面路径为/pages/index/index
-        });
-      }, 1500); // 等待1.5秒以显示登录成功的提示
     }
-  }
-});
+
+    return {
+      username,
+      password,
+      login,
+    }
+  },
+})
 </script>
 
 
 <style>
-
-
 .login-box {
   width: 100%;
   height: 100%;
@@ -69,7 +89,6 @@ export default defineComponent({
 .logo {
   width: 80px;
   height: 80px;
-
 }
 
 .title {
@@ -78,22 +97,17 @@ export default defineComponent({
   margin-bottom: 50px;
 }
 
-
-
 .input {
   width: 95%;
   height: 50px;
   margin-bottom: 15px;
   border-bottom: 1px solid #ddd; /* 只添加底部边框，可以根据需要调整颜色和宽度 */
   font-size: 18px; /* 可选：调整输入框字体大小 */
-  
 }
 
-.input-wrapper{
+.input-wrapper {
   margin-left: 5%;
 }
-
-
 
 .login-button {
   width: 80%;
@@ -103,6 +117,4 @@ export default defineComponent({
   margin-top: 60px;
   font-size: 16px;
 }
-
-
 </style>
