@@ -4,8 +4,8 @@
       <view class="profile">
         <image class="head" src="../../static/my.png" mode="aspectFill"></image>
         <view class="info">
-          <view class="name">{{ username }}</view>
-          <view class="position">产品经理</view>
+          <view class="name">{{ userInfo.employeeName }}</view>
+          <view class="position">{{ userInfo.employeeJob }}</view>
         </view>
       </view>
     </view>
@@ -46,20 +46,24 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue';
+import { getinfo } from '@/api/info_bytoken';
 
 export default defineComponent({
   setup() {
-    const username = ref('');
+    const userInfo = ref({
+      employeeName: '',
+      employeeJob: ''
+    });
+  
 
-    onMounted(() => {
-      try {
-        const storedUsername = uni.getStorageSync('username');
-        if (storedUsername) {
-          username.value = storedUsername;
+    onMounted(async () => {
+        const response = await getinfo();
+        if (response) {
+          userInfo.value = {
+            employeeName: response.employeeName,
+            employeeJob: response.employeeJob
+          };
         }
-      } catch (error) {
-        console.error('Error accessing local storage:', error);
-      }
     });
 
     const historicalreport = () => {
@@ -93,7 +97,7 @@ export default defineComponent({
     };
 
     return {
-      username,
+      userInfo,
       historicalreport,
       information,
       updatepassword,
@@ -128,8 +132,8 @@ export default defineComponent({
 }
 
 .head {
-  width: 65px;
-  height: 65px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   margin-right: 20px;
   border: 2px solid #fff;
@@ -142,7 +146,7 @@ export default defineComponent({
 }
 
 .name {
-  font-size: 18px;
+  font-size: 19px;
   font-weight: bold;
 }
 

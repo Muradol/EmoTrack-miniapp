@@ -2,21 +2,21 @@
   <view class="container">
     <view class="header">
       <view class="profile">
-        <image class="head" src="../../static/head.png" mode="aspectFill"></image>
+        <image class="head" src="../../static/my.png" mode="aspectFill"></image>
         <view class="info">
-          <view class="name">Muradil</view>
-          <view class="position">产品经理</view>
+          <view class="name">{{ userInfo.employeeName }}</view>
+          <view class="position">{{ userInfo.employeeJob }}</view>
         </view>
       </view>
     </view>
     <view class="input-box">
       <view class="input-wrapper">
-        <label class="input-label">密码</label>
-        <input type="password" v-model="password" placeholder="请输入密码" class="input"/>
+        <label class="input-label">原密码</label>
+        <input type="password" v-model="oldPassword" placeholder="请输入原密码" class="input"/>
       </view>
       <view class="input-wrapper">
-        <label class="input-label">确认密码</label>
-        <input type="password" v-model="confirmPassword" placeholder="请再次输入密码" class="input"/>
+        <label class="input-label">新密码</label>
+        <input type="password" v-model="newPassword" placeholder="请输入新密码" class="input"/>
       </view>
     </view>
     <button class="save-button" @click="save">保存</button>
@@ -25,54 +25,78 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref ,onMounted } from 'vue';
+import { changepassword } from '@/api/passwordchange'; 
+import { getinfo } from '@/api/info_bytoken';
 
 export default defineComponent({
   setup() {
-    const username = ref('');
-    const password = ref('');
-    const confirmPassword = ref('');
+    const oldPassword = ref('');
+    const newPassword = ref('');
+    const userInfo = ref({
+      employeeName: '',
+      employeeJob: ''
+    });
 
-    const save = () => {
-      if (password.value !== confirmPassword.value) {
-        showToast({
-          title: '密码和确认密码不匹配',
-          icon: 'none'
-        });
-        return;
-      }
+    onMounted(async () => {
+        const response = await getinfo();
+        if (response) {
+          userInfo.value = {
+            employeeName: response.employeeName,
+            employeeJob: response.employeeJob
+          };
+        }
+    });
 
-      showToast({
-        title: '修改密码成功',
-        icon: 'success'
+    const save = async () => {
+  if (!oldPassword.value || !newPassword.value) {
+    uni.showToast({
+      title: '请输入所有必填项',
+      icon: 'none',
+      duration: 2000,
+    });
+    return;
+  }
+    console.log("Old Password:", oldPassword.value);
+    console.log("New Password:", newPassword.value);
+
+    // 发送修改密码请求
+    const response = await changepassword({ old_password: oldPassword.value, new_password: newPassword.value });
+
+    // 显示修改密码成功的消息
+    uni.showToast({
+      title: '修改密码成功',
+      icon: 'success'
+    });
+
+    // 等待一段时间后跳转到个人中心页面
+    setTimeout(() => {
+      uni.navigateTo({
+        url: '/pages/index/my' // 假设index页面路径为/pages/index/my
       });
+    }, 1500); // 等待1.5秒以显示修改密码成功的提示
+};
 
-      setTimeout(() => {
-        navigateTo({
-          url: '/pages/index/my' // 假设index页面路径为/pages/index/index
-        });
-      }, 1500); // 等待1.5秒以显示登录成功的提示
-    };
 
     const cancel = () => {
-      navigateTo({
+      // 取消修改密码，返回到个人中心页面
+      uni.navigateTo({
         url: '/pages/index/my'
       });
     };
 
     return {
-      username,
-      password,
-      confirmPassword,
+      userInfo,
+      oldPassword,
+      newPassword,
       save,
       cancel
     };
   }
 });
 </script>
-  
-  
-  
+
+
   <style>
 .container {
   display: flex;
@@ -96,11 +120,12 @@ export default defineComponent({
 }
 
 .head {
-  width: 50px;
-  height: 50px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   margin-right: 10px;
 }
+
 
 .info {
   display: flex;
@@ -108,14 +133,15 @@ export default defineComponent({
 }
 
 .name {
-  font-size: 18px;
+  font-size: 19px;
   font-weight: bold;
 }
 
 .position {
   font-size: 12px;
-  color: #666;
-  margin-left: 10px;
+  color: #000000;
+  margin-top: 2px;
+  margin-left: 6px;
 }
 
 

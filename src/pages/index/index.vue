@@ -4,7 +4,7 @@
       <view class="profile" @click="handleProfileClick">
         <image class="head" src="../../static/my.png" mode="aspectFill"></image>
         <view class="info">
-          <view class="name">{{ username || '请登录' }}</view>
+          <view class="name">{{ userInfo.employeeName || '请登录' }}</view>
         </view>
       </view>
     </view>
@@ -17,75 +17,72 @@
   </view>
 </template>
 
+
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue';
+import { getinfo } from '@/api/info_bytoken';
 
 export default defineComponent({
   setup() {
-    const username = ref('');
+    const userInfo = ref<{ employeeName: string | null }>({
+      employeeName: null
+    });
 
-    onMounted(() => {
-      try {
-        const storedUsername = uni.getStorageSync('username');
-        if (storedUsername) {
-          username.value = storedUsername;
+    onMounted(async () => {
+        const response = await getinfo();
+        if (response && response.employeeName) {
+          userInfo.value.employeeName = response.employeeName;
         }
-      } catch (error) {
-        console.error('Error accessing local storage:', error);
-      }
     });
 
     const showActionSheet = () => {
-      try {
-        wx.showActionSheet({
-          itemList: ['拍照', '从手机相册选择'],
-          success: (res) => {
-            if (!res.cancel) {
-              if (res.tapIndex === 0) {
-                wx.chooseImage({
-                  sourceType: ['camera'],
-                  success: (cameraRes) => {
-                    console.log(cameraRes.tempFilePaths);
-                  }
-                });
-              } else if (res.tapIndex === 1) {
-                wx.chooseImage({
-                  sourceType: ['album'],
-                  success: (albumRes) => {
-                    console.log(albumRes.tempFilePaths);
-                  }
-                });
-              }
+      const token = uni.getStorageSync('token');
+      if (token) {
+      wx.showActionSheet({
+        itemList: ['拍照', '从手机相册选择'],
+        success: (res) => {
+          if (!res.cancel) {
+            if (res.tapIndex === 0) {
+              wx.chooseImage({
+                sourceType: ['camera'],
+                success: (cameraRes) => {
+                  console.log(cameraRes.tempFilePaths);
+                }
+              });
+            } else if (res.tapIndex === 1) {
+              wx.chooseImage({
+                sourceType: ['album'],
+                success: (albumRes) => {
+                  console.log(albumRes.tempFilePaths);
+                }
+              });
             }
-          },
-          fail(res) {
-            console.log(res.errMsg);
           }
+        },
+      });
+    }else{
+      uni.navigateTo({
+          url: '/pages/index/login'
         });
-      } catch (error) {
-        console.error('Error showing action sheet:', error);
-      }
+        return;
+    }
     };
 
     const historicalreport = () => {
-      try {
-        const token = uni.getStorageSync('token');
-        if (!token) {
-          uni.navigateTo({
-            url: '/pages/index/login'
-          });
-          return;
-        }
+      const token = uni.getStorageSync('token');
+      if (!token) {
         uni.navigateTo({
-          url: '/pages/index/historicalreport'
+          url: '/pages/index/login'
         });
-      } catch (error) {
-        console.error('Error accessing local storage:', error);
+        return;
       }
+      uni.navigateTo({
+        url: '/pages/index/historicalreport'
+      });
     };
 
     const handleProfileClick = () => {
-      if (username.value) {
+      if (userInfo.value.employeeName) {
         uni.navigateTo({
           url: '/pages/index/my'
         });
@@ -97,7 +94,7 @@ export default defineComponent({
     };
 
     return {
-      username,
+      userInfo,
       showActionSheet,
       historicalreport,
       handleProfileClick
@@ -105,6 +102,7 @@ export default defineComponent({
   }
 });
 </script>
+
 
 
 

@@ -1,64 +1,88 @@
 <template>
-    <view class="container">
-      <view class="header">
-        <view class="profile">
-          <image class="head" src="../../static/head.png" mode="aspectFill"></image>
-          <view class="info">
-            <view class="name">Muradil</view>
-            <view class="position">产品经理</view>
-          </view>
+  <view class="container">
+    <view class="header">
+      <view class="profile">
+        <image class="head" src="../../static/my.png" mode="aspectFill"></image>
+        <view class="info">
+          <view class="name">{{ userInfo.employeeName }}</view>
+          <view class="position">{{ userInfo.employeeJob }}</view>
         </view>
       </view>
-      <view class="user-details">
-        <view class="detail-item">
-          <view class="label">用户名</view>
-          <view class="value">Muradil</view>
-        </view>
-        <view class="detail-item">
-          <view class="label">+86</view>
-          <view class="value">15770081281</view>
-        </view>
-        <view class="detail-item">
-          <view class="label">生日</view>
-          <view class="value">2002年7月23日</view>
-        </view>
-        <view class="detail-item">
-          <view class="label">性别</view>
-          <view class="value">男</view>
-        </view>
-        <view class="detail-item">
-          <view class="label">部门</view>
-          <view class="value">技术部</view>
-        </view>
-        <view class="detail-item">
-          <view class="label">岗位</view>
-          <view class="value">产品经理</view>
-        </view>
-      </view>
-      <button class="edit-button" @click="update">编辑</button>
     </view>
-  </template>
-  
+    <view class="user-details">
+      <view class="detail-item">
+        <view class="label">用户名</view>
+        <view class="value">{{ userInfo.employeeName }}</view>
+      </view>
+      <view class="detail-item">
+        <view class="label">手机号</view>
+        <view class="value">{{ userInfo.employeePhoneNumber }}</view>
+      </view>
+      <view class="detail-item">
+        <view class="label">生日</view>
+        <view class="value">{{ userInfo.employeeBirthday }}</view>
+      </view>
+      <view class="detail-item">
+        <view class="label">性别</view>
+        <view class="value">{{ userInfo.employeeGender === '1' ? '男' : '女' }}</view>
+      </view>
+      <view class="detail-item">
+        <view class="label">部门</view>
+        <view class="value">{{ userInfo.employeeJob }}</view>
+      </view>
+      <view class="detail-item">
+        <view class="label">岗位</view>
+        <view class="value">{{ userInfo.employeeJob }}</view>
+      </view>
+    </view>
+    <button class="edit-button" @click="update">编辑</button>
+  </view>
+</template>
 
-  <script lang="ts">
-  import { defineComponent } from 'vue';
+
   
-  export default defineComponent({
-    setup() {
-      const update = () => {
-        uni.reLaunch({
-          url: '/pages/index/updateinformation'
-        });
-      };
-  
-      return {
-        update
-      };
-    }
-  });
-  </script>
-  
-  
+<script lang="ts">
+import { defineComponent, ref, onMounted } from 'vue';
+import { getinfo } from '@/api/info_bytoken'; 
+
+export default defineComponent({
+  setup() {
+    const userInfo = ref({
+      employeeName: '',
+      employeePhoneNumber: '',
+      employeeAvatar: '',
+      employeeBirthday: '',
+      employeeGender: '',
+      employeeJob: ''
+    });
+
+    onMounted(async () => {
+        const response = await getinfo(); 
+        if (response) {
+          userInfo.value = {
+            employeeName: response.employeeName,
+            employeePhoneNumber: response.employeePhoneNumber,
+            employeeAvatar: response.employeeAvatar,
+            employeeBirthday: response.employeeBirthday,
+            employeeGender: response.employeeGender,
+            employeeJob: response.employeeJob
+          };
+        }
+    });
+
+    const update = () => {
+      uni.reLaunch({
+        url: '/pages/index/updateinformation'
+      });
+    };
+
+    return {
+      userInfo,
+      update
+    };
+  }
+});
+</script>
   
   <style>
 .container {
@@ -83,8 +107,8 @@
 }
 
 .head {
-  width: 50px;
-  height: 50px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   margin-right: 10px;
 }
@@ -95,14 +119,15 @@
 }
 
 .name {
-  font-size: 18px;
+  font-size: 19px;
   font-weight: bold;
 }
 
 .position {
   font-size: 12px;
-  color: #666;
-  margin-left: 10px;
+  color: #000000;
+  margin-top: 2px;
+  margin-left: 6px;
 }
   
   .user-details {

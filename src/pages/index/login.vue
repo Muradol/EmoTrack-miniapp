@@ -37,7 +37,6 @@ export default defineComponent({
         })
         return
       }
-      try {
         const res = await userLogin({
           employeePhoneNumber: username.value,
           employeePassword: password.value,
@@ -45,10 +44,8 @@ export default defineComponent({
         const memberStore = useMemberStore();
         memberStore.setUser({
           token: res.token,
-          username: username.value
         });
         uni.setStorageSync('token', res.token);
-        uni.setStorageSync('username', username.value);
         uni.showToast({
           title: '登录成功',
           icon: 'success'
@@ -58,13 +55,6 @@ export default defineComponent({
             url: '/pages/index/index'
           });
         }, 500);
-      } catch (error) {
-        uni.showToast({
-          title: '登录失败',
-          icon: 'none'
-        });
-        console.error('Login error:', error);
-      }
     }
 
     return {

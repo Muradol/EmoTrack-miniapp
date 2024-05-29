@@ -2,10 +2,10 @@
     <view class="container">
       <view class="header">
         <view class="profile" @click="my">
-          <image class="head" src="../../static/head.png" mode="aspectFill"></image>
+          <image class="head" src="../../static/my.png" mode="aspectFill"></image>
           <view class="info" @click="my">
-            <view class="name">Muradil</view>
-            <view class="position">产品经理</view>
+            <view class="name">{{ userInfo.employeeName }}</view>
+            <view class="position">{{ userInfo.employeeJob }}</view>
           </view>
         </view>
       </view>
@@ -30,31 +30,47 @@
   
 
   <script lang="ts">
-  import { defineComponent, ref } from 'vue';
+  import { defineComponent, ref,onMounted } from 'vue';
+  import { getinfo } from '@/api/info_bytoken';
   
   export default defineComponent({
     setup() {
       const reports = ref([
         { time: '2024-4-22 20:12:00' },
         { time: '2024-4-22 19:12:00' },
-        { time: '2024-4-22 18:12:00' },
-        { time: '2024-4-22 17:12:00' },
-        { time: '2024-4-22 16:12:00' },
-        { time: '2024-4-22 15:12:00' },
-        { time: '2024-4-22 14:12:00' },
-        { time: '2024-4-22 13:12:00' },
-        { time: '2024-4-22 12:12:00' },
-        { time: '2024-4-22 12:12:00' },
-        { time: '2024-4-22 12:12:00' },
-        { time: '2024-4-22 12:12:00' },
-        { time: '2024-4-22 12:12:00' },
-        { time: '2024-4-22 12:12:00' },
-        { time: '2024-4-22 12:12:00' },
-        { time: '2024-4-22 12:12:00' },
-        { time: '2024-4-22 12:12:00' },
-        { time: '2024-4-22 12:12:00' },
-        { time: '2024-4-22 12:12:00' }
+        // { time: '2024-4-22 18:12:00' },
+        // { time: '2024-4-22 17:12:00' },
+        // { time: '2024-4-22 16:12:00' },
+        // { time: '2024-4-22 15:12:00' },
+        // { time: '2024-4-22 14:12:00' },
+        // { time: '2024-4-22 13:12:00' },
+        // { time: '2024-4-22 12:12:00' },
+        // { time: '2024-4-22 12:12:00' },
+        // { time: '2024-4-22 12:12:00' },
+        // { time: '2024-4-22 12:12:00' },
+        // { time: '2024-4-22 12:12:00' },
+        // { time: '2024-4-22 12:12:00' },
+        // { time: '2024-4-22 12:12:00' },
+        // { time: '2024-4-22 12:12:00' },
+        // { time: '2024-4-22 12:12:00' },
+        // { time: '2024-4-22 12:12:00' },
+        // { time: '2024-4-22 12:12:00' }
       ]);
+
+      const userInfo = ref({
+      employeeName: '',
+      employeeJob: ''
+    });
+
+    onMounted(async () => {
+        const response = await getinfo();
+        if (response) {
+          userInfo.value = {
+            employeeName: response.employeeName,
+            employeeJob: response.employeeJob
+          };
+        }
+    });
   
       const viewReport = (index) => {
         // 跳转到 report 页面，并传递参数
@@ -70,6 +86,7 @@
       };
   
       return {
+        userInfo,
         reports,
         viewReport,
         my
@@ -102,8 +119,8 @@
 }
 
 .head {
-  width: 50px;
-  height: 50px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   margin-right: 10px;
 }
@@ -114,14 +131,15 @@
 }
 
 .name {
-  font-size: 18px;
+  font-size: 19px;
   font-weight: bold;
 }
 
 .position {
   font-size: 12px;
-  color: #666;
-  margin-left: 10px;
+  color: #000000;
+  margin-top: 2px;
+  margin-left: 6px;
 }
 
 .main-content {
