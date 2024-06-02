@@ -2,7 +2,7 @@
   <view class="container">
     <view class="header">
       <view class="profile">
-        <image class="head" src="../../static/my.png" mode="aspectFill"></image>
+        <image class="head" :src="userInfo.avatar" mode="aspectFill"></image>
         <view class="info">
           <view class="name">{{ userInfo.employeeName }}</view>
           <view class="position">{{ userInfo.employeeJob }}</view>
@@ -12,11 +12,11 @@
     <view class="input-box">
       <view class="input-wrapper">
         <label class="input-label">原密码</label>
-        <input type="password" v-model="oldPassword" placeholder="请输入原密码" class="input"/>
+        <input type="password" v-model="oldPassword" placeholder="请输入原密码" class="input" />
       </view>
       <view class="input-wrapper">
         <label class="input-label">新密码</label>
-        <input type="password" v-model="newPassword" placeholder="请输入新密码" class="input"/>
+        <input type="password" v-model="newPassword" placeholder="请输入新密码" class="input" />
       </view>
     </view>
     <button class="save-button" @click="save">保存</button>
@@ -25,79 +25,94 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref ,onMounted } from 'vue';
-import { changepassword } from '@/api/passwordchange'; 
-import { getinfo } from '@/api/info_bytoken';
+import { defineComponent, ref, onMounted } from 'vue'
+import { changepassword } from '@/api/passwordchange'
+import { getinfo } from '@/api/info_bytoken'
 
 export default defineComponent({
   setup() {
-    const oldPassword = ref('');
-    const newPassword = ref('');
+    const oldPassword = ref('')
+    const newPassword = ref('')
     const userInfo = ref({
       employeeName: '',
-      employeeJob: ''
-    });
+      employeeJob: '',
+      avatar: '',
+    })
 
     onMounted(async () => {
-        const response = await getinfo();
-        if (response) {
-          userInfo.value = {
-            employeeName: response.employeeName,
-            employeeJob: response.employeeJob
-          };
+      const response = await getinfo()
+      if (response) {
+        userInfo.value = {
+          employeeName: response.employeeName,
+          employeeJob: response.employeeJob,
+          avatar: response.employeeAvatar,
         }
-    });
+      }
+    })
 
     const save = async () => {
-  if (!oldPassword.value || !newPassword.value) {
-    uni.showToast({
-      title: '请输入所有必填项',
-      icon: 'none',
-      duration: 2000,
-    });
-    return;
-  }
-    console.log("Old Password:", oldPassword.value);
-    console.log("New Password:", newPassword.value);
+      if (!oldPassword.value || !newPassword.value) {
+        uni.showToast({
+          title: '请输入所有必填项',
+          icon: 'none',
+          duration: 2000,
+        })
+        return
+      }
 
-    // 发送修改密码请求
-    const response = await changepassword({ old_password: oldPassword.value, new_password: newPassword.value });
+      try {
+        // 打印日志以调试
+        console.log('Old Password:', oldPassword.value)
+        console.log('New Password:', newPassword.value)
 
-    // 显示修改密码成功的消息
-    uni.showToast({
-      title: '修改密码成功',
-      icon: 'success'
-    });
+        // 发送修改密码请求
+        const response = await changepassword({
+          old_password: oldPassword.value,
+          new_password: newPassword.value,
+        })
 
-    // 等待一段时间后跳转到个人中心页面
-    setTimeout(() => {
-      uni.navigateTo({
-        url: '/pages/index/my' // 假设index页面路径为/pages/index/my
-      });
-    }, 1500); // 等待1.5秒以显示修改密码成功的提示
-};
+        console.log('Change Password Response:', response)
 
+        // 根据你的接口封装，20000表示成功
+        uni.showToast({
+          title: '修改密码成功',
+          icon: 'success',
+        })
+
+        // 等待一段时间后跳转到个人中心页面
+        setTimeout(() => {
+          uni.navigateTo({
+            url: '/pages/index/my', // 假设index页面路径为/pages/index/my
+          })
+        }, 1500) // 等待1.5秒以显示修改密码成功的提示
+      } catch (error) {
+        uni.showToast({
+          title: '请求失败，请重试',
+          icon: 'none',
+        })
+        console.error('Error changing password:', error)
+      }
+    }
 
     const cancel = () => {
       // 取消修改密码，返回到个人中心页面
       uni.navigateTo({
-        url: '/pages/index/my'
-      });
-    };
+        url: '/pages/index/my',
+      })
+    }
 
     return {
       userInfo,
       oldPassword,
       newPassword,
       save,
-      cancel
-    };
-  }
-});
+      cancel,
+    }
+  },
+})
 </script>
 
-
-  <style>
+<style>
 .container {
   display: flex;
   flex-direction: column;
@@ -126,14 +141,13 @@ export default defineComponent({
   margin-right: 10px;
 }
 
-
 .info {
   display: flex;
   flex-direction: column;
 }
 
 .name {
-  font-size: 19px;
+  font-size: 20px;
   font-weight: bold;
 }
 
@@ -144,18 +158,16 @@ export default defineComponent({
   margin-left: 6px;
 }
 
-
 .input {
   width: 90%;
   height: 50px;
   margin-bottom: 15px;
   border-bottom: 1px solid #ddd; /* 只添加底部边框，可以根据需要调整颜色和宽度 */
   font-size: 18px; /* 可选：调整输入框字体大小 */
-  
 }
 
-.input-wrapper{
-margin-left: 10%;
+.input-wrapper {
+  margin-left: 10%;
 }
 
 .save-button {
@@ -181,4 +193,4 @@ margin-left: 10%;
   border-radius: 5px;
   margin-top: 15px;
 }
-</style>navigatornavigator
+</style>

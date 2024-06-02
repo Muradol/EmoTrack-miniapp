@@ -2,7 +2,7 @@
   <view class="container">
     <view class="header">
       <view class="profile">
-        <image class="head" src="../../static/my.png" mode="aspectFill"></image>
+        <image class="head" :src="userInfo.avatar" mode="aspectFill" @click="upavatar"></image>
         <view class="info">
           <view class="name">{{ userInfo.employeeName }}</view>
           <view class="position">{{ userInfo.employeeJob }}</view>
@@ -45,71 +45,131 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue';
-import { getinfo } from '@/api/info_bytoken';
+import { defineComponent, ref, onMounted } from 'vue'
+import { getinfo } from '@/api/info_bytoken'
+import { useMemberStore } from '@/stores'
 
 export default defineComponent({
   setup() {
     const userInfo = ref({
       employeeName: '',
-      employeeJob: ''
-    });
-  
+      employeeJob: '',
+      avatar: '',
+    })
 
     onMounted(async () => {
-        const response = await getinfo();
-        if (response) {
-          userInfo.value = {
-            employeeName: response.employeeName,
-            employeeJob: response.employeeJob
-          };
+      const response = await getinfo()
+      if (response) {
+        userInfo.value = {
+          employeeName: response.employeeName,
+          employeeJob: response.employeeJob,
+          avatar: response.employeeAvatar,
         }
-    });
+      }
+    })
 
     const historicalreport = () => {
       uni.navigateTo({
-        url: '/pages/index/historicalreport'
-      });
-    };
+        url: '/pages/index/historicalreport',
+      })
+    }
 
     const information = () => {
       uni.navigateTo({
-        url: '/pages/index/information'
-      });
-    };
+        url: '/pages/index/information',
+      })
+    }
 
     const updatepassword = () => {
       uni.navigateTo({
-        url: '/pages/index/updatepassword'
-      });
-    };
+        url: '/pages/index/updatepassword',
+      })
+    }
+
+    const upavatar = () => {
+      wx.showActionSheet({
+        itemList: ['拍照', '从手机相册选择'],
+        success: async (res) => {
+          if (!res.cancel) {
+            let sourceType = []
+            if (res.tapIndex === 0) {
+              sourceType = ['camera']
+            } else if (res.tapIndex === 1) {
+              sourceType = ['album']
+            }
+            uni.chooseImage({
+              count: 1,
+              sourceType: sourceType,
+              success: (chooseImageRes) => {
+                const tempFilePaths = chooseImageRes.tempFilePaths
+                const file = tempFilePaths[0]
+                const memberStore = useMemberStore()
+
+                // 显示加载框
+                uni.showLoading({
+                  title: '上传中...',
+                })
+
+                uni.uploadFile({
+                  url: 'http://47.120.44.17:8080/employeeBasic/upload_Avatar',
+                  filePath: file,
+                  name: 'file',
+                  header: {
+                    Authorization: memberStore.user?.token,
+                    'content-type': 'multipart/form-data',
+                  },
+                  success: (res) => {
+                    // 隐藏加载框
+                    uni.hideLoading()
+                    console.log(res)
+
+                    // 解析返回数据
+                    const data = JSON.parse(res.data)
+
+                    if (data.code === 20000) {
+                      // 显示成功提示框
+                      uni.showToast({
+                        title: '上传成功',
+                        icon: 'success',
+                      })
+                    }
+                  },
+                })
+              },
+            })
+          }
+        },
+      })
+    }
 
     const logout = () => {
-      try {
-        uni.removeStorageSync('token');
-        uni.removeStorageSync('username');
-      } catch (error) {
-        console.error('Error removing local storage:', error);
-      }
-      uni.reLaunch({
-        url: '/pages/index/login'
-      });
-    };
+      uni.removeStorageSync('token')
+      const memberStore = useMemberStore()
+      memberStore.clearUser() // 清除用户信息
+      uni.showToast({
+        title: '退出登录成功',
+        icon: 'success',
+      })
+      setTimeout(() => {
+        uni.reLaunch({
+          url: '/pages/index/login',
+        })
+      }, 500)
+    }
 
     return {
       userInfo,
       historicalreport,
       information,
       updatepassword,
-      logout
-    };
-  }
-});
+      logout,
+      upavatar,
+    }
+  },
+})
 </script>
 
-  
-  
-  <style>
+<style>
 .container {
   display: flex;
   flex-direction: column;
@@ -121,7 +181,7 @@ export default defineComponent({
 .header {
   width: 100%;
   height: 25%;
-  background-color: #5290FF;
+  background-color: #5290ff;
 }
 
 .profile {
@@ -135,7 +195,7 @@ export default defineComponent({
   width: 70px;
   height: 70px;
   border-radius: 50%;
-  margin-right: 20px;
+  margin-right: 10px;
   border: 2px solid #fff;
 }
 
@@ -146,7 +206,7 @@ export default defineComponent({
 }
 
 .name {
-  font-size: 19px;
+  font-size: 20px;
   font-weight: bold;
 }
 
@@ -163,7 +223,7 @@ export default defineComponent({
   width: 90%;
   height: 150px;
   background-color: #fff;
-  margin-top: -70px;  /* 移动 stats 位置，使其与蓝色背景重叠 */
+  margin-top: -70px; /* 移动 stats 位置，使其与蓝色背景重叠 */
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   position: relative;
@@ -212,8 +272,8 @@ export default defineComponent({
   border-bottom: 1px solid #eee;
 }
 
-image{
-  width: 25px;  /* 调整菜单图标的宽度 */
+image {
+  width: 25px; /* 调整菜单图标的宽度 */
   height: 25px; /* 调整菜单图标的高度 */
   margin-right: 20px;
 }
@@ -233,5 +293,4 @@ image{
   border-radius: 5px;
   margin-top: 100px;
 }
-  </style>
-  
+</style>

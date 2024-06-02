@@ -6,11 +6,11 @@
       <view class="input-box">
         <view class="input-wrapper">
           <label class="input-label">用户名</label>
-          <input type="text" v-model="username" placeholder="请输入用户名" class="input"/>
+          <input type="text" v-model="username" placeholder="请输入用户名" class="input" />
         </view>
         <view class="input-wrapper">
           <label class="input-label">密码</label>
-          <input type="password" v-model="password" placeholder="请输入密码" class="input"/>
+          <input type="password" v-model="password" placeholder="请输入密码" class="input" />
         </view>
       </view>
       <button class="login-button" @click="login">登录</button>
@@ -19,8 +19,8 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, ref} from 'vue'
-import {userLogin} from '@/api/login'
+import { defineComponent, ref } from 'vue'
+import { userLogin } from '@/api/login'
 import { useMemberStore } from '@/stores'
 
 export default defineComponent({
@@ -37,24 +37,24 @@ export default defineComponent({
         })
         return
       }
-        const res = await userLogin({
-          employeePhoneNumber: username.value,
-          employeePassword: password.value,
-        });
-        const memberStore = useMemberStore();
-        memberStore.setUser({
-          token: res.token,
-        });
-        uni.setStorageSync('token', res.token);
-        uni.showToast({
-          title: '登录成功',
-          icon: 'success'
-        });
-        setTimeout(() => {
-          uni.reLaunch({
-            url: '/pages/index/index'
-          });
-        }, 500);
+      const res = await userLogin({
+        employeePhoneNumber: username.value,
+        employeePassword: password.value,
+      })
+      const memberStore = useMemberStore()
+      memberStore.setUser({
+        token: res.token,
+      })
+      uni.setStorageSync('token', res.token)
+      uni.showToast({
+        title: '登录成功',
+        icon: 'success',
+      })
+      setTimeout(() => {
+        uni.reLaunch({
+          url: '/pages/index/index',
+        })
+      }, 500)
     }
 
     return {
@@ -65,7 +65,6 @@ export default defineComponent({
   },
 })
 </script>
-
 
 <style>
 .login-box {

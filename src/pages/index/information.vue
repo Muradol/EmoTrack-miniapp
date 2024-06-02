@@ -2,7 +2,7 @@
   <view class="container">
     <view class="header">
       <view class="profile">
-        <image class="head" src="../../static/my.png" mode="aspectFill"></image>
+        <image class="head" :src="userInfo.avatar" mode="aspectFill"></image>
         <view class="info">
           <view class="name">{{ userInfo.employeeName }}</view>
           <view class="position">{{ userInfo.employeeJob }}</view>
@@ -11,11 +11,11 @@
     </view>
     <view class="user-details">
       <view class="detail-item">
-        <view class="label">用户名</view>
+        <view class="label2">用户名</view>
         <view class="value">{{ userInfo.employeeName }}</view>
       </view>
       <view class="detail-item">
-        <view class="label">手机号</view>
+        <view class="label2">手机号</view>
         <view class="value">{{ userInfo.employeePhoneNumber }}</view>
       </view>
       <view class="detail-item">
@@ -28,10 +28,10 @@
       </view>
       <view class="detail-item">
         <view class="label">部门</view>
-        <view class="value">{{ userInfo.employeeJob }}</view>
+        <view class="value">{{ userInfo.employeeDepartment }}</view>
       </view>
       <view class="detail-item">
-        <view class="label">岗位</view>
+        <view class="label">职位</view>
         <view class="value">{{ userInfo.employeeJob }}</view>
       </view>
     </view>
@@ -39,52 +39,74 @@
   </view>
 </template>
 
-
-  
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue';
-import { getinfo } from '@/api/info_bytoken'; 
+import { defineComponent, ref, onMounted } from 'vue'
+import { getinfo } from '@/api/info_bytoken'
+import { getdepartment } from '@/api/getdepartment'
 
 export default defineComponent({
   setup() {
     const userInfo = ref({
       employeeName: '',
       employeePhoneNumber: '',
-      employeeAvatar: '',
       employeeBirthday: '',
       employeeGender: '',
-      employeeJob: ''
-    });
+      employeeJob: '',
+      employeeDepartment: '',
+      employeeId: '',
+      avatar: '',
+    })
 
     onMounted(async () => {
-        const response = await getinfo(); 
-        if (response) {
-          userInfo.value = {
-            employeeName: response.employeeName,
-            employeePhoneNumber: response.employeePhoneNumber,
-            employeeAvatar: response.employeeAvatar,
-            employeeBirthday: response.employeeBirthday,
-            employeeGender: response.employeeGender,
-            employeeJob: response.employeeJob
-          };
+      const response = await getinfo()
+      if (response) {
+        userInfo.value = {
+          employeeName: response.employeeName,
+          employeePhoneNumber: response.employeePhoneNumber,
+          employeeBirthday: response.employeeBirthday,
+          employeeGender: response.employeeGender,
+          employeeJob: response.employeeJob,
+          employeeDepartment: '',
+          employeeId: response.employeeId,
+          avatar: response.employeeAvatar,
         }
-    });
+
+        const departmentResponse = await getdepartment({
+          employeeId: response.employeeId,
+        })
+        if (departmentResponse) {
+          const departmentMap = {
+            0: '技术部',
+            1: '策划部',
+            2: '设计部',
+            3: '广告部',
+            4: '公关部',
+            5: '监督部',
+            6: '后勤部',
+            7: '保安部',
+            8: '宣传部',
+            10: '策划部1',
+          }
+          userInfo.value.employeeDepartment = departmentMap[departmentResponse.employeeDepartmentNo]
+        }
+      }
+    })
 
     const update = () => {
-      uni.reLaunch({
-        url: '/pages/index/updateinformation'
-      });
-    };
+      uni.navigateTo({
+        url: '/pages/index/updateinformation',
+      })
+    }
 
     return {
       userInfo,
-      update
-    };
-  }
-});
+      update,
+    }
+  },
+})
 </script>
-  
-  <style>
+
+<style>
 .container {
   display: flex;
   flex-direction: column;
@@ -119,7 +141,7 @@ export default defineComponent({
 }
 
 .name {
-  font-size: 19px;
+  font-size: 20px;
   font-weight: bold;
 }
 
@@ -129,49 +151,52 @@ export default defineComponent({
   margin-top: 2px;
   margin-left: 6px;
 }
-  
-  .user-details {
-    width: 90%;
-    padding: 10px;
-    margin-top: 30px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-  
-  .detail-item {
-    display: flex;
-    padding: 10px 0;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .detail-item:last-child {
-    border-bottom: none;
-  }
-  
-  .label {
-    font-size: 16px;
-    color: #333;
-    font-weight: bold;
-    margin-right: 150px;
-    margin-left: 20px;
-  }
-  
-  .value {
-    font-size: 16px;
-    color: #666;
-  }
-  
-  .edit-button {
-    width: 80%;
-    padding: 3px 0;
-    background-color: #4285f4;
-    color: #fff;
-    font-size: 18px;
-    text-align: center;
-    border: none;
-    border-radius: 5px;
-    margin-top: 80px;
-  }
-  </style>
-  
+
+.user-details {
+  width: 90%;
+  padding: 10px;
+  margin-top: 30px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.detail-item {
+  display: flex;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.label {
+  font-size: 16px;
+  color: #333;
+  font-weight: bold;
+  margin-right: 150px;
+  margin-left: 20px;
+}
+
+.label2 {
+  font-size: 16px;
+  color: #333;
+  font-weight: bold;
+  margin-right: 133px;
+  margin-left: 20px;
+}
+
+.value {
+  font-size: 16px;
+  color: #666;
+}
+
+.edit-button {
+  width: 80%;
+  padding: 3px 0;
+  background-color: #4285f4;
+  color: #fff;
+  font-size: 18px;
+  text-align: center;
+  border: none;
+  border-radius: 5px;
+  margin-top: 80px;
+}
+</style>

@@ -1,102 +1,82 @@
 <template>
-    <view class="container">
-      <view class="header">
-        <view class="profile" @click="my">
-          <image class="head" src="../../static/my.png" mode="aspectFill"></image>
-          <view class="info" @click="my">
-            <view class="name">{{ userInfo.employeeName }}</view>
-            <view class="position">{{ userInfo.employeeJob }}</view>
-          </view>
-        </view>
-      </view>
-      <view class="main-content">
-        <view class="table">
-          <view class="table-header">
-            <view class="table-cell serial">序号</view>
-            <view class="table-cell time">检测时间</view>
-            <view class="table-cell">操作</view>
-          </view>
-          <view v-for="(report, index) in reports" :key="index" class="table-row">
-            <view class="table-cell serial">{{ index + 1 }}</view>
-            <view class="table-cell time">{{ report.time }}</view>
-            <view class="table-cell"><text class="link" @tap="viewReport(index)">查看报告</text></view>
-          </view>
+  <view class="container">
+    <view class="header">
+      <view class="profile" @click="my">
+        <image class="head" :src="userInfo.avatar" mode="aspectFill"></image>
+        <view class="info" @click="my">
+          <view class="name">{{ userInfo.employeeName }}</view>
+          <view class="position">{{ userInfo.employeeJob }}</view>
         </view>
       </view>
     </view>
-  </template>
-  
+    <view class="main-content">
+      <view class="table">
+        <view class="table-header">
+          <view class="table-cell serial">序号</view>
+          <view class="table-cell time">检测时间</view>
+          <view class="table-cell">操作</view>
+        </view>
+        <view v-for="(report, index) in reports" :key="index" class="table-row">
+          <view class="table-cell serial">{{ index + 1 }}</view>
+          <view class="table-cell time">{{ report.time }}</view>
+          <view class="table-cell"
+            ><text class="link" @tap="viewReport(index)">查看报告</text></view
+          >
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
 
-  
+<script lang="ts">
+import { defineComponent, ref, onMounted } from 'vue'
+import { getinfo } from '@/api/info_bytoken'
 
-  <script lang="ts">
-  import { defineComponent, ref,onMounted } from 'vue';
-  import { getinfo } from '@/api/info_bytoken';
-  
-  export default defineComponent({
-    setup() {
-      const reports = ref([
-        { time: '2024-4-22 20:12:00' },
-        { time: '2024-4-22 19:12:00' },
-        // { time: '2024-4-22 18:12:00' },
-        // { time: '2024-4-22 17:12:00' },
-        // { time: '2024-4-22 16:12:00' },
-        // { time: '2024-4-22 15:12:00' },
-        // { time: '2024-4-22 14:12:00' },
-        // { time: '2024-4-22 13:12:00' },
-        // { time: '2024-4-22 12:12:00' },
-        // { time: '2024-4-22 12:12:00' },
-        // { time: '2024-4-22 12:12:00' },
-        // { time: '2024-4-22 12:12:00' },
-        // { time: '2024-4-22 12:12:00' },
-        // { time: '2024-4-22 12:12:00' },
-        // { time: '2024-4-22 12:12:00' },
-        // { time: '2024-4-22 12:12:00' },
-        // { time: '2024-4-22 12:12:00' },
-        // { time: '2024-4-22 12:12:00' },
-        // { time: '2024-4-22 12:12:00' }
-      ]);
+export default defineComponent({
+  setup() {
+    const reports = ref([{ time: '2024-4-22 20:12:00' }, { time: '2024-4-22 19:12:00' }])
 
-      const userInfo = ref({
+    const userInfo = ref({
       employeeName: '',
-      employeeJob: ''
-    });
+      employeeJob: '',
+      avatar: '',
+    })
 
     onMounted(async () => {
-        const response = await getinfo();
-        if (response) {
-          userInfo.value = {
-            employeeName: response.employeeName,
-            employeeJob: response.employeeJob
-          };
+      const response = await getinfo()
+      if (response) {
+        userInfo.value = {
+          employeeName: response.employeeName,
+          employeeJob: response.employeeJob,
+          avatar: response.employeeAvatar,
         }
-    });
-  
-      const viewReport = (index) => {
-        // 跳转到 report 页面，并传递参数
-        uni.navigateTo({
-          url: `/pages/index/report?index=${index}`
-        });
-      };
-  
-      const my = () => {
-        uni.navigateTo({
-          url: '/pages/index/my'
-        });
-      };
-  
-      return {
-        userInfo,
-        reports,
-        viewReport,
-        my
-      };
+      }
+    })
+
+    const viewReport = (index) => {
+      // 跳转到 report 页面，并传递参数
+      uni.navigateTo({
+        url: `/pages/index/report?index=${index}`,
+      })
     }
-  });
-  </script>
-  
-  
-  <style>
+
+    const my = () => {
+      uni.navigateTo({
+        url: '/pages/index/my',
+      })
+    }
+
+    return {
+      userInfo,
+      reports,
+      viewReport,
+      my,
+    }
+  },
+})
+</script>
+
+<style>
 .container {
   display: flex;
   flex-direction: column;
@@ -131,7 +111,7 @@
 }
 
 .name {
-  font-size: 19px;
+  font-size: 20px;
   font-weight: bold;
 }
 
@@ -194,5 +174,4 @@
   flex: none;
   width: 170px;
 }
-  </style>
-  
+</style>
