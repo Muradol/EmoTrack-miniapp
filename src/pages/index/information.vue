@@ -86,6 +86,7 @@ export default defineComponent({
             7: '保安部',
             8: '宣传部',
             10: '策划部1',
+            11: '研发部',
           }
           userInfo.value.employeeDepartment = departmentMap[departmentResponse.employeeDepartmentNo]
         }

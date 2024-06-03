@@ -20,7 +20,6 @@
       </view>
     </view>
     <button class="save-button" @click="save">保存</button>
-    <button class="cancel-button" @click="cancel">取消</button>
   </view>
 </template>
 
@@ -28,6 +27,7 @@
 import { defineComponent, ref, onMounted } from 'vue'
 import { changepassword } from '@/api/passwordchange'
 import { getinfo } from '@/api/info_bytoken'
+import { useMemberStore } from '@/stores'
 
 export default defineComponent({
   setup() {
@@ -61,18 +61,17 @@ export default defineComponent({
       }
 
       try {
-        // 打印日志以调试
-        console.log('Old Password:', oldPassword.value)
-        console.log('New Password:', newPassword.value)
-
         // 发送修改密码请求
         const response = await changepassword({
           old_password: oldPassword.value,
           new_password: newPassword.value,
         })
-
-        console.log('Change Password Response:', response)
-
+        uni.removeStorageSync('token')
+        uni.removeStorageSync('todayCount')
+        uni.removeStorageSync('thisWeekCount')
+        uni.removeStorageSync('thisMonthCount')
+        const memberStore = useMemberStore()
+        memberStore.clearUser() // 清除用户信息
         // 根据你的接口封装，20000表示成功
         uni.showToast({
           title: '修改密码成功',
@@ -81,8 +80,8 @@ export default defineComponent({
 
         // 等待一段时间后跳转到个人中心页面
         setTimeout(() => {
-          uni.navigateTo({
-            url: '/pages/index/my', // 假设index页面路径为/pages/index/my
+          uni.reLaunch({
+            url: '/pages/index/login', // 假设index页面路径为/pages/index/my
           })
         }, 1500) // 等待1.5秒以显示修改密码成功的提示
       } catch (error) {
@@ -94,19 +93,11 @@ export default defineComponent({
       }
     }
 
-    const cancel = () => {
-      // 取消修改密码，返回到个人中心页面
-      uni.navigateTo({
-        url: '/pages/index/my',
-      })
-    }
-
     return {
       userInfo,
       oldPassword,
       newPassword,
       save,
-      cancel,
     }
   },
 })

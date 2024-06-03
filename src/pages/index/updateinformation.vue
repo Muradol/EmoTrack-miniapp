@@ -88,7 +88,7 @@ export default defineComponent({
 
       const response = await updatainfo(updateData)
       uni.showToast({
-        title: '保存成功',
+        title: '修改信息成功',
         icon: 'success',
       })
       setTimeout(() => {

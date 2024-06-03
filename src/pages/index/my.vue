@@ -13,15 +13,15 @@
       <view class="stat-title">我的检测次数</view>
       <view class="stat-items">
         <view class="stat-item">
-          <view class="stat-number">3</view>
+          <view class="stat-number">{{ todayCount }}</view>
           <view class="stat-label">今日</view>
         </view>
         <view class="stat-item">
-          <view class="stat-number">20</view>
+          <view class="stat-number">{{ thisWeekCount }}</view>
           <view class="stat-label">本周</view>
         </view>
         <view class="stat-item">
-          <view class="stat-number">78</view>
+          <view class="stat-number">{{ thisMonthCount }}</view>
           <view class="stat-label">本月</view>
         </view>
       </view>
@@ -57,6 +57,10 @@ export default defineComponent({
       avatar: '',
     })
 
+    const todayCount = ref()
+    const thisWeekCount = ref(0)
+    const thisMonthCount = ref(0)
+
     onMounted(async () => {
       const response = await getinfo()
       if (response) {
@@ -66,6 +70,11 @@ export default defineComponent({
           avatar: response.employeeAvatar,
         }
       }
+
+      // 从本地存储中获取数据，并提供默认值
+      todayCount.value = uni.getStorageSync('todayCount') || 0
+      thisWeekCount.value = uni.getStorageSync('thisWeekCount') || 0
+      thisMonthCount.value = uni.getStorageSync('thisMonthCount') || 0
     })
 
     const historicalreport = () => {
@@ -144,6 +153,9 @@ export default defineComponent({
 
     const logout = () => {
       uni.removeStorageSync('token')
+      uni.removeStorageSync('todayCount')
+      uni.removeStorageSync('thisWeekCount')
+      uni.removeStorageSync('thisMonthCount')
       const memberStore = useMemberStore()
       memberStore.clearUser() // 清除用户信息
       uni.showToast({
@@ -164,6 +176,9 @@ export default defineComponent({
       updatepassword,
       logout,
       upavatar,
+      todayCount,
+      thisWeekCount,
+      thisMonthCount,
     }
   },
 })
