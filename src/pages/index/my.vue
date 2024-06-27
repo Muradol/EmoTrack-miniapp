@@ -141,7 +141,11 @@ export default defineComponent({
                         title: '上传成功',
                         icon: 'success',
                       })
-                    }
+                    } else
+                      uni.showToast({
+                        title: '请上传含有正面完整人脸的图片',
+                        icon: 'none',
+                      })
                   },
                 })
               },

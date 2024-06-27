@@ -78,15 +78,15 @@ export default defineComponent({
           const departmentMap = {
             0: '技术部',
             1: '策划部',
-            2: '设计部',
+            42: '设计部',
             3: '广告部',
             4: '公关部',
             5: '监督部',
-            6: '后勤部',
-            7: '保安部',
-            8: '宣传部',
+            34: '行政',
+            44: '无所属部门',
+            41: '宣传部',
             10: '策划部1',
-            11: '研发部',
+            49: '研发部',
           }
           userInfo.value.employeeDepartment = departmentMap[departmentResponse.employeeDepartmentNo]
         }
